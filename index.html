@@ -3,1553 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shithead Card Game</title>
+    <title>Scotland Votes 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+        :root {
+            --blue: #003F87;
+            --white: #ffffff;
+            --cream: #fafaf8;
+            --dark: #1a1a2e;
+            --mid: #3d3d5c;
+            --border: rgba(0,0,0,0.1);
+            --shadow: 0 4px 24px rgba(0,0,0,0.18);
+            --shadow-lg: 0 12px 48px rgba(0,0,0,0.28);
         }
-
-        body {
-            font-family: 'Comic Sans MS', 'Arial', cursive, sans-serif;
-            background: linear-gradient(135deg, #ff006e, #fb5607, #ff006e, #8338ec);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
+ 
+        html, body {
+            height: 100%;
+            font-family: 'Lora', Georgia, serif;
+            color: var(--dark);
             overflow-x: hidden;
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+ 
+        /* ── Saltire background ── */
+        .saltire-bg {
+            background-color: var(--blue);
+            background-image:
+                linear-gradient(to bottom right,
+                    transparent calc(50% - 7%),
+                    var(--white) calc(50% - 7%),
+                    var(--white) calc(50% + 7%),
+                    transparent calc(50% + 7%)
+                ),
+                linear-gradient(to bottom left,
+                    transparent calc(50% - 7%),
+                    var(--white) calc(50% - 7%),
+                    var(--white) calc(50% + 7%),
+                    transparent calc(50% + 7%)
+                );
+            background-attachment: fixed;
+            min-height: 100vh;
         }
-
-        body::before {
-            content: '💕';
-            position: fixed;
-            font-size: 60px;
-            top: 10%;
-            left: 5%;
-            opacity: 0.4;
-            animation: float 6s ease-in-out infinite, spin 10s linear infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(15deg); }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        #game-container {
-            width: 100%;
-            max-width: 1200px;
-            background: linear-gradient(135deg, #1a001a, #4a0e4e);
-            border-radius: 25px;
-            padding: 30px;
-            box-shadow: 0 20px 80px rgba(255, 0, 110, 0.6), 0 0 50px rgba(131, 56, 236, 0.4);
-            border: 4px solid transparent;
-            background-clip: padding-box;
-            position: relative;
-        }
-
-        #game-container::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            background: linear-gradient(45deg, #ff006e, #8338ec, #06ffa5, #ff006e);
-            background-size: 300% 300%;
-            border-radius: 25px;
-            z-index: -1;
-            animation: borderGlow 4s ease infinite;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        #game-container::after {
-            content: '❤️';
-            position: absolute;
-            top: -20px;
-            right: 20px;
-            font-size: 40px;
-            animation: heartbeat 1.5s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px #ff006e);
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-        }
-
-        .game-section {
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .section-label {
-            color: #06ffa5;
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(6, 255, 165, 0.8), 2px 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            animation: labelGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes labelGlow {
-            0%, 100% { text-shadow: 0 0 20px rgba(6, 255, 165, 0.8), 2px 2px 4px rgba(0,0,0,0.5); }
-            50% { text-shadow: 0 0 30px rgba(6, 255, 165, 1), 0 0 40px rgba(131, 56, 236, 0.6), 2px 2px 4px rgba(0,0,0,0.5); }
-        }
-
-        .cards-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            min-height: 130px;
-            align-items: center;
-        }
-
-        .card {
-            width: 90px;
-            height: 120px;
-            background: linear-gradient(135deg, #fff, #f0f0ff);
-            border: 3px solid #8338ec;
-            border-radius: 12px;
+ 
+        /* ── Pages ── */
+        .page { display: none; min-height: 100vh; }
+        .page.active {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            font-size: 32px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 4px 15px rgba(131, 56, 236, 0.4);
-            position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .card:hover {
-            transform: translateY(-20px) scale(1.1) rotateZ(5deg);
-            box-shadow: 0 15px 40px rgba(255, 0, 110, 0.6), 0 0 30px rgba(131, 56, 236, 0.8);
-            border-color: #ff006e;
-        }
-
-        .card.face-down {
-            background: linear-gradient(135deg, #8338ec, #ff006e, #fb5607);
-            color: white;
-            cursor: default;
-            font-size: 40px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
-        .card.face-down.clickable {
-            cursor: pointer;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(131, 56, 236, 0.4); }
-            50% { box-shadow: 0 4px 25px rgba(255, 0, 110, 0.8), 0 0 30px rgba(131, 56, 236, 0.6); }
-        }
-
-        .card.face-down.clickable:hover {
-            transform: translateY(-20px) scale(1.1) rotateZ(-5deg);
-            box-shadow: 0 15px 40px rgba(255, 0, 110, 0.9), 0 0 40px rgba(6, 255, 165, 0.6);
-        }
-
-        .card.red {
-            color: #d00;
-        }
-
-        .card.black {
-            color: #000;
-        }
-
-        .card-suit {
-            font-size: 24px;
-            margin-top: 5px;
-        }
-
-        .pile-section {
-            background: rgba(131, 56, 236, 0.2);
-            padding: 20px;
-            border-radius: 20px;
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
-            align-items: center;
-            gap: 15px;
-            border: 3px solid rgba(6, 255, 165, 0.4);
-            box-shadow: inset 0 0 30px rgba(131, 56, 236, 0.3);
+            padding: 5rem 1.25rem 3rem;
+            animation: fadeUp 0.45s ease both;
         }
-
-        #pile-display {
-            position: relative;
-            min-width: 100px;
-            min-height: 130px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .page.scroll-page.active { justify-content: flex-start; }
+ 
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        .pile-card {
-            position: absolute;
+ 
+        /* ── Fixed masthead ── */
+        .masthead {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            background: rgba(0,40,100,0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid white;
+            padding: 0.7rem 1.25rem;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.75rem;
         }
-
-        button {
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ff006e, #8338ec);
-            color: white;
-            border: 2px solid #06ffa5;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.5), 0 0 20px rgba(131, 56, 236, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        button:hover {
-            background: linear-gradient(135deg, #8338ec, #ff006e);
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 0, 110, 0.8), 0 0 40px rgba(6, 255, 165, 0.6);
-            border-color: #ff006e;
-        }
-
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .info-text {
-            color: #06ffa5;
-            font-size: 18px;
-            margin: 10px 0;
-            text-shadow: 0 0 10px rgba(6, 255, 165, 0.6);
-            font-weight: bold;
-        }
-
-        .turn-indicator {
-            background: linear-gradient(135deg, rgba(131, 56, 236, 0.9), rgba(255, 0, 110, 0.9));
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-size: 22px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 3px solid #06ffa5;
-            box-shadow: 0 4px 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(6, 255, 165, 0.4);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            animation: turnPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes turnPulse {
-            0%, 100% { box-shadow: 0 4px 20px rgba(255, 0, 110, 0.6), 0 0 30px rgba(6, 255, 165, 0.4); }
-            50% { box-shadow: 0 4px 30px rgba(255, 0, 110, 0.9), 0 0 50px rgba(6, 255, 165, 0.8); }
-        }
-
-        .message {
-            color: #06ffa5;
-            font-size: 18px;
-            margin: 10px 0;
-            min-height: 25px;
-            font-weight: bold;
-            text-shadow: 0 0 15px rgba(6, 255, 165, 0.8), 2px 2px 4px rgba(0,0,0,0.8);
-        }
-
-        #lose-screen, #treasure-screen, #letter-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(139, 0, 0, 0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 40px;
-        }
-
-        #lose-message, #treasure-message {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 600px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-        }
-
-        #lose-message h2, #treasure-message h2 {
-            color: #8b0000;
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-
-        #lose-message p, #treasure-message p {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        #restart-button {
-            padding: 15px 40px;
-            font-size: 20px;
-            background: #ff1493;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        #restart-button:hover {
-            background: #ff69b4;
-            transform: scale(1.05);
-        }
-
-        #treasure-chest {
-            width: 250px;
-            height: 250px;
-            cursor: pointer;
-            transition: transform 0.3s;
-            filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 50px rgba(255, 0, 110, 0.4));
-            animation: chestGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes chestGlow {
-            0%, 100% {
-                filter: drop-shadow(0 15px 30px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 50px rgba(255, 0, 110, 0.4));
-            }
-            50% {
-                filter: drop-shadow(0 15px 40px rgba(255, 215, 0, 1)) drop-shadow(0 0 80px rgba(131, 56, 236, 0.8));
-            }
-        }
-
-        #treasure-chest:hover {
-            transform: scale(1.15) rotateY(10deg);
-            animation: chestShake 0.5s ease-in-out infinite;
-        }
-
-        @keyframes chestShake {
-            0%, 100% { transform: scale(1.15) rotateY(10deg) translateX(0); }
-            25% { transform: scale(1.15) rotateY(10deg) translateX(-5px); }
-            75% { transform: scale(1.15) rotateY(10deg) translateX(5px); }
-        }
-
-        #letter-screen {
-            background: linear-gradient(135deg, #8b0000, #ff1493);
-            overflow-y: auto;
-        }
-
-        #letter-content {
-            background: rgba(255, 255, 255, 0.65);
-            padding: 30px 40px;
-            border-radius: 20px;
-            max-width: 750px;
-            margin: 30px auto;
-            text-align: center;
-            box-shadow: 0 15px 60px rgba(0,0,0,0.6);
-            position: relative;
-            z-index: 10;
-            border: 3px solid #ff69b4;
-            backdrop-filter: blur(8px);
+        .masthead-title {
             font-family: 'Playfair Display', serif;
-            max-height: 85vh;
-            overflow-y: auto;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            color: white; font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
         }
-
-        #letter-content::before {
-            content: '💌';
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 50px;
-            background: white;
-            padding: 10px;
-            border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        .masthead-date {
+            font-family: 'Lora', serif; font-style: italic;
+            font-size: 0.78rem; color: rgba(255,255,255,0.7);
         }
-
-        #letter-content::after {
-            content: '';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, transparent 50%, #ff69b4 50%);
-            opacity: 0.3;
+        .audio-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.45);
+            color: white; padding: 0.3rem 0.8rem; border-radius: 20px;
+            cursor: pointer; font-size: 0.78rem; font-family: 'Lora', serif;
+            transition: background 0.2s; white-space: nowrap;
         }
-
-        .letter-corner {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            opacity: 0.3;
+        .audio-btn:hover { background: rgba(255,255,255,0.14); }
+ 
+        /* ═══════════════════════════════════════
+           PAGE 1 — LANDING
+        ═══════════════════════════════════════ */
+        #page1 { text-align: center; }
+ 
+        .flag-icon { font-size: clamp(3rem, 8vw, 5rem); margin-bottom: 1.5rem;
+            filter: drop-shadow(0 4px 14px rgba(0,0,0,0.45)); }
+ 
+        .quote-card {
+            background: var(--blue);
+            border: 2px solid rgba(255,255,255,0.45);
+            border-radius: 5px;
+            padding: clamp(1.5rem, 4vw, 2.75rem) clamp(1.5rem, 5vw, 3.25rem);
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            max-width: 680px;
         }
-
-        .letter-corner.top-left {
-            top: 10px;
-            left: 10px;
-            background: linear-gradient(225deg, transparent 50%, #ff69b4 50%);
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.35rem, 3.5vw, 2.1rem);
+            font-style: italic; color: white;
+            line-height: 1.45; text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+            margin-bottom: 1rem;
         }
-
-        .letter-corner.bottom-right {
-            bottom: 10px;
-            right: 10px;
-            background: linear-gradient(45deg, transparent 50%, #ff69b4 50%);
+        .quote-attr {
+            font-family: 'Lora', serif; font-size: 0.88rem;
+            color: rgba(255,255,255,0.72);
+            text-transform: uppercase; letter-spacing: 0.12em;
         }
-
-        .letter-corner.bottom-left {
-            bottom: 10px;
-            left: 10px;
-            background: linear-gradient(315deg, transparent 50%, #ff69b4 50%);
+ 
+        .btn-white {
+            background: white; color: var(--blue); border: none;
+            padding: 1rem 2.75rem;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; cursor: pointer; border-radius: 3px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+            transition: all 0.25s;
         }
-
-        #letter-content h1 {
-            font-family: 'Dancing Script', cursive;
-            color: #8b0000;
-            margin-bottom: 20px;
-            font-size: 38px;
-            border-bottom: 2px solid #ff69b4;
-            padding-bottom: 12px;
-            font-weight: 700;
+        .btn-white:hover { background: #f0f4ff; transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.3); }
+        .btn-white:active { transform: translateY(0); }
+ 
+        /* ═══════════════════════════════════════
+           PAGE 2 — DISCLAIMER
+        ═══════════════════════════════════════ */
+        #page2 { text-align: left; }
+ 
+        .caution-wrap { max-width: 660px; width: 100%; }
+ 
+        .caution-box {
+            background: white; border-radius: 5px;
+            box-shadow: var(--shadow-lg); overflow: hidden; margin-bottom: 1.25rem;
         }
-
-        #letter-content p {
-            color: #333;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 12px;
-            text-align: left;
-            font-weight: 400;
+        .caution-head {
+            background: #e8b400;
+            padding: 1rem 1.75rem;
+            display: flex; align-items: center; gap: 0.75rem;
         }
-
-        #letter-content .signature {
-            font-family: 'Dancing Script', cursive;
-            text-align: right;
-            font-style: normal;
-            margin-top: 25px;
-            font-size: 22px;
-            color: #8b0000;
-            border-top: 2px solid #ff69b4;
-            padding-top: 15px;
-            font-weight: 700;
+        .caution-head h2 {
+            font-family: 'Playfair Display', serif; font-size: 1.35rem;
+            font-weight: 900; color: #1a1000;
+            text-transform: uppercase; letter-spacing: 0.1em;
         }
-
-        .heart {
-            position: absolute;
-            color: #ff69b4;
-            font-size: 30px;
-            animation: fall linear infinite;
-            opacity: 0.8;
+        .caution-body { padding: clamp(1.25rem, 4vw, 2rem); }
+        .caution-body p {
+            font-size: 0.93rem; line-height: 1.85; color: var(--mid);
+            margin-bottom: 1.1rem;
         }
-
-        @keyframes fall {
-            0% {
-                top: -10%;
-                opacity: 0.8;
-            }
-            100% {
-                top: 110%;
-                opacity: 0;
-            }
+        .caution-body p:last-child { margin-bottom: 0; }
+        .sign-off {
+            font-style: italic; color: var(--dark) !important;
+            border-top: 1px solid var(--border);
+            padding-top: 1.1rem !important; margin-top: 0.5rem;
         }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #f0f;
-            animation: confettiFall linear infinite;
+ 
+        .btn-blue {
+            width: 100%; background: var(--blue); color: white; border: none;
+            padding: 1.1rem 1.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            font-weight: 700; letter-spacing: 0.06em;
+            text-transform: uppercase; cursor: pointer; border-radius: 3px;
+            transition: all 0.25s; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
-
-        @keyframes confettiFall {
-            0% {
-                top: -10%;
-                transform: translateX(0) rotateZ(0deg);
-                opacity: 1;
-            }
-            100% {
-                top: 110%;
-                transform: translateX(100px) rotateZ(720deg);
-                opacity: 0;
-            }
+        .btn-blue:hover { background: #002d6b; transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(0,0,0,0.3); }
+ 
+        /* ═══════════════════════════════════════
+           PAGE 3 — PARTY SELECTION
+        ═══════════════════════════════════════ */
+        .page3-inner {
+            max-width: 920px; width: 100%;
+            padding-top: 1rem; padding-bottom: 3rem;
         }
-
-        .confetti:nth-child(odd) {
-            animation-direction: reverse;
+        .sec-head { text-align: center; margin-bottom: 2.25rem; }
+        .sec-label {
+            display: inline-block; background: white; color: var(--blue);
+            font-family: 'Lora', serif; font-size: 0.72rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            padding: 0.3rem 1rem; margin-bottom: 0.7rem; border-radius: 2px;
         }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .sec-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+            color: white; font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            margin-bottom: 0.4rem;
         }
-
-        #youtube-player {
-            position: fixed;
-            top: -1000px;
-            left: -1000px;
+        .sec-divider { width: 56px; height: 3px; background: rgba(255,255,255,0.55); margin: 0.75rem auto 0; }
+        .sec-sub {
+            font-family: 'Lora', serif; font-style: italic;
+            color: #000000; font-size: 0.97rem;
+            margin-top: 0.75rem;
         }
-
-        #cover-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
+ 
+        .party-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 1rem;
         }
-
-        #cover-page.hidden {
-            display: none;
+ 
+        .party-btn {
+            border: none; border-radius: 5px;
+            padding: 1.4rem 1.6rem 1.4rem 1.6rem;
+            cursor: pointer; text-align: left;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.22);
+            transition: transform 0.22s, box-shadow 0.22s;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.5rem;
         }
-
-        .cover-title {
-            font-size: 42px;
-            color: #fff;
-            margin-bottom: 30px;
-            text-shadow: 0 0 30px rgba(255, 0, 110, 1), 0 0 50px rgba(131, 56, 236, 0.8), 3px 3px 6px rgba(0,0,0,0.5);
-            font-weight: bold;
-            line-height: 1.3;
-            animation: titleGlow 3s ease-in-out infinite;
+        .party-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.3); }
+        .party-btn:active { transform: translateY(0); }
+        .party-btn-left { display: flex; flex-direction: column; gap: 0.2rem; }
+        .party-btn-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem); font-weight: 700;
         }
-
-        @keyframes titleGlow {
-            0%, 100% { 
-                text-shadow: 0 0 30px rgba(255, 0, 110, 1), 0 0 50px rgba(131, 56, 236, 0.8), 3px 3px 6px rgba(0,0,0,0.5);
-            }
-            50% { 
-                text-shadow: 0 0 50px rgba(255, 0, 110, 1), 0 0 80px rgba(131, 56, 236, 1), 0 0 100px rgba(6, 255, 165, 0.6), 3px 3px 6px rgba(0,0,0,0.5);
-            }
+        .party-btn-leader {
+            font-family: 'Lora', serif; font-size: 0.78rem;
+            opacity: 0.82; font-style: italic;
         }
-
-        .cover-title::before {
-            content: '💖 ';
+        .party-btn-arrow { font-size: 1.1rem; flex-shrink: 0; opacity: 0.7; }
+ 
+        /* Party colours */
+        .snp   { background: #FFF05A; color: #1a1200; }
+        .lab   { background: #DC241F; color: white; }
+        .con   { background: #0087DC; color: white; }
+        .ld    { background: #FAA61A; color: white; }
+        .grn   { background: #00873E; color: white; }
+        .ref   { background: #12B6CF; color: white; }
+ 
+        /* ═══════════════════════════════════════
+           PAGE 4 — PARTY DETAIL
+        ═══════════════════════════════════════ */
+        .page4-inner {
+            max-width: 760px; width: 100%;
+            padding-top: 0.5rem; padding-bottom: 3rem;
         }
-
-        .cover-title::after {
-            content: ' 💖';
+ 
+        .detail-header {
+            border-radius: 5px 5px 0 0;
+            padding: 1.6rem 1.75rem;
         }
-
-        .rules-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 700px;
-            text-align: left;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        .detail-party-name {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.2rem, 3.5vw, 1.75rem); font-weight: 900;
+            margin-bottom: 0.2rem;
         }
-
-        .rules-container h2 {
-            color: #8b0000;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 28px;
+        .detail-party-leader {
+            font-family: 'Lora', serif; font-style: italic;
+            font-size: 0.88rem; opacity: 0.85;
         }
-
-        .rules-container h3 {
-            color: #d00;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 20px;
+ 
+        .detail-body {
+            background: white; border-radius: 0 0 5px 5px;
+            padding: clamp(1.25rem, 4vw, 2rem);
+            box-shadow: var(--shadow-lg);
         }
-
-        .rules-container p, .rules-container ul {
-            color: #333;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 15px;
+ 
+        .detail-sec { margin-bottom: 1.75rem; }
+        .detail-sec:last-child { margin-bottom: 0; }
+ 
+        .detail-sec-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.88rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            margin-bottom: 0.9rem; padding-bottom: 0.45rem;
+            border-bottom: 2px solid;
         }
-
-        .rules-container ul {
-            padding-left: 30px;
+        .t-policy { color: var(--blue); border-color: var(--blue); }
+        .t-pros   { color: #00793a; border-color: #00793a; }
+        .t-cons   { color: #c51a17; border-color: #c51a17; }
+ 
+        .detail-list {
+            list-style: none; display: flex; flex-direction: column; gap: 0.6rem;
         }
-
-        .rules-container li {
-            margin-bottom: 8px;
+        .detail-list li {
+            font-size: 0.9rem; line-height: 1.7; color: var(--mid);
+            padding-left: 1.4rem; position: relative;
         }
-
-        .special-card {
-            font-weight: bold;
-            color: #8b0000;
+        .detail-list li::before {
+            content: ''; position: absolute;
+            left: 0; top: 0.58em;
+            width: 7px; height: 7px; border-radius: 50%;
         }
-
-        .reward-box {
-            background: linear-gradient(135deg, #06ffa5, #06d6a0);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border: 3px solid #8338ec;
-            box-shadow: 0 0 30px rgba(6, 255, 165, 0.6), 0 0 50px rgba(131, 56, 236, 0.4);
-            animation: rewardGlow 2s ease-in-out infinite;
+        .policy-list li::before { background: var(--blue); }
+        .pros-list  li::before { background: #00793a; }
+        .cons-list  li::before { background: #c51a17; }
+ 
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: white; color: var(--blue); border: none;
+            padding: 0.85rem 1.75rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.88rem; font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            cursor: pointer; border-radius: 3px; margin-top: 1.25rem;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            transition: all 0.22s;
         }
-
-        @keyframes rewardGlow {
-            0%, 100% { 
-                box-shadow: 0 0 30px rgba(6, 255, 165, 0.6), 0 0 50px rgba(131, 56, 236, 0.4);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 50px rgba(6, 255, 165, 1), 0 0 80px rgba(255, 0, 110, 0.6);
-                transform: scale(1.02);
-            }
-        }
-
-        .reward-box p {
-            color: #1a001a;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 0;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        .start-btn {
-            padding: 20px 50px;
-            font-size: 28px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ff006e, #8338ec, #06ffa5);
-            background-size: 200% 200%;
-            animation: gradientMove 3s ease infinite;
-            color: white;
-            border: 3px solid white;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 30px rgba(255, 0, 110, 0.6), 0 0 50px rgba(131, 56, 236, 0.4);
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes gradientMove {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .start-btn::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .start-btn:hover {
-            transform: scale(1.15) rotateZ(-2deg);
-            box-shadow: 0 15px 50px rgba(255, 0, 110, 0.9), 0 0 80px rgba(6, 255, 165, 0.8);
-        }
-
-        .silly-note {
-            color: #ffd700;
-            font-size: 14px;
-            font-style: italic;
-            margin-top: 10px;
-        }
-
-        #game-area {
-            display: none;
-        }
-
-        #game-area.active {
-            display: block;
+        .btn-back:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.22); }
+ 
+        /* ── Responsive ── */
+        @media (max-width: 580px) {
+            .masthead-date { display: none; }
+            .party-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <!-- COVER PAGE -->
-        <div id="cover-page">
-            <div class="cover-title">Special Valentines Shithead Edition</div>
-            
-            <div class="rules-container">
-                <h2>🎮 How to Play</h2>
-                
-                <h3>The Basics:</h3>
-                <p>The goal is simple: Get rid of all your cards. Just wanted to clarify the rules for a beginner like yourself 😉</p>
-                <ul>
-                    <li>You start with 3 cards in your hand - play these first</li>
-                    <li>Once your hand is empty, play your 3 face-up cards</li>
-                    <li>Finally, play your 3 face-down cards (blind!)</li>
-                    <li>Each turn, play a card equal to or higher than the pile</li>
-                    <li>You can also play the same card on itself (6 on 6, 7 on 7, etc.)</li>
-                    <li>Can't play? Hit "Pick up Gimp" and take the pile</li>
-                </ul>
-
-                <h3>✨ Special Cards (Your Secret Weapons!):</h3>
-                <ul>
-                    <li><span class="special-card">2</span> - Resets the pile! Any card can be played next</li>
-                    <li><span class="special-card">5</span> - Mirror card! Copies whatever is underneath (or acts like a 2 if played on nothing). If you play a 5 on a 7, the next player must still play lower!</li>
-                    <li><span class="special-card">7</span> - Next player must play lower than a 7 (or another 7)</li>
-                    <li><span class="special-card">8</span> - Skip my turn! You play again</li>
-                    <li><span class="special-card">10</span> - BOOM! Clears the pile (but can't play on a 7)</li>
-                    <li><span class="special-card">Four of a kind</span> - If 4 same cards are played in a row, pile clears!</li>
-                </ul>
-
-                <div class="reward-box">
-                    <p>🎁 Win the game and a special surprise is at the end 🎁</p>
-                </div>
-
-                <p style="text-align: center; color: #666; font-size: 14px; margin-top: 20px;">
-                    P.S. I may have given you some <em>very</em> good cards... but don't tell anyone 🤫
+ 
+<!-- ── Audio ── -->
+<audio id="pipes" loop preload="auto">
+    <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/9/9c/Bagpipes.ogg/Bagpipes.ogg.mp3" type="audio/mpeg">
+    <source src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Bagpipes.ogg" type="audio/ogg">
+</audio>
+ 
+<!-- ── Masthead ── -->
+<div class="masthead">
+    <div class="masthead-title">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland Votes 2026</div>
+    <div class="masthead-date">Thursday 7 May 2026</div>
+    <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">🎵 Music</button>
+</div>
+ 
+<!-- ════════════════════════════════════
+     PAGE 1 — LANDING
+════════════════════════════════════ -->
+<div id="page1" class="page saltire-bg active">
+    <div class="flag-icon">🏴󠁧󠁢󠁳󠁣󠁴󠁿</div>
+    <div class="quote-card">
+        <div class="quote-text">"They may take our lives, but they'll never take our freedom!"</div>
+        <div class="quote-attr">— Braveheart</div>
+    </div>
+    <button class="btn-white" onclick="startJourney()">Start Learning About The Future</button>
+</div>
+ 
+<!-- ════════════════════════════════════
+     PAGE 2 — DISCLAIMER
+════════════════════════════════════ -->
+<div id="page2" class="page saltire-bg">
+    <div class="caution-wrap">
+        <div class="caution-box">
+            <div class="caution-head">
+                <span style="font-size:1.4rem">⚠️</span>
+                <h2>Caution</h2>
+            </div>
+            <div class="caution-body">
+                <p>Pros and cons are summaries of arguments, not endorsements. They draw from each party's manifesto, independent fiscal analysis from the Institute for Fiscal Studies and the Fraser of Allander Institute, and reporting across multiple outlets. Reasonable voters weigh these differently.</p>
+                <p>Some research was also done with the help of Claude AI. It must be noted that this is purely educational and intended to help inform. Unbiased facts were presented in the hope that this helps you become more informed, and not to directly influence any decision.</p>
+                <p class="sign-off">
+                    Love,<br><br>
+                    <strong>Benjamin Emanuel</strong>
                 </p>
             </div>
-
-            <button class="start-btn" onclick="startGame()">Let's Play! 💕</button>
-            <div class="silly-note">Prepare to lose... or win? Who knows! 😜</div>
         </div>
-
-        <!-- GAME AREA -->
-        <div id="game-area">
-        <div class="turn-indicator" id="turn-indicator">Your Turn</div>
-
-        <!-- CPU AREA -->
-        <div class="game-section">
-            <div class="section-label">CPU</div>
-            <div class="info-text">Cards in hand: <span id="cpu-hand-count">3</span></div>
-            <div class="cards-container" id="cpu-faceup-cards"></div>
-            <div class="cards-container" id="cpu-facedown-cards"></div>
+        <button class="btn-blue" onclick="goTo(3)">I Accept The Terms And Conditions</button>
+    </div>
+</div>
+ 
+<!-- ════════════════════════════════════
+     PAGE 3 — PARTY SELECTION
+════════════════════════════════════ -->
+<div id="page3" class="page scroll-page saltire-bg">
+    <div class="page3-inner">
+        <div class="sec-head">
+            <div class="sec-label">Holyrood Election 2026</div>
+            <h1 class="sec-title">Choose a Party to Learn More</h1>
+            <div class="sec-divider"></div>
+            <p class="sec-sub">Select any party to view their key policies, pros and cons.</p>
         </div>
-
-        <!-- MIDDLE PILE -->
-        <div class="game-section">
-            <div class="pile-section">
-                <div class="section-label">Pile</div>
-                <div class="info-text" style="color: #06ffa5;">Deck: <span id="deck-count">40</span> cards left</div>
-                <div id="pile-display"></div>
-                <div class="message" id="game-message"></div>
-                <button id="pickup-btn" style="display:none;">Pick up Gimp</button>
+        <div class="party-grid">
+            <button class="party-btn snp" onclick="showParty('snp')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Scottish National Party</span>
+                    <span class="party-btn-leader">Leader: John Swinney</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+            <button class="party-btn lab" onclick="showParty('lab')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Scottish Labour</span>
+                    <span class="party-btn-leader">Leader: Anas Sarwar</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+            <button class="party-btn con" onclick="showParty('con')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Scottish Conservatives</span>
+                    <span class="party-btn-leader">Leader: Russell Findlay</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+            <button class="party-btn ld" onclick="showParty('ld')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Scottish Liberal Democrats</span>
+                    <span class="party-btn-leader">Leader: Alex Cole-Hamilton</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+            <button class="party-btn grn" onclick="showParty('grn')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Scottish Greens</span>
+                    <span class="party-btn-leader">Co-leaders: Mackay & Greer</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+            <button class="party-btn ref" onclick="showParty('ref')">
+                <div class="party-btn-left">
+                    <span class="party-btn-name">Reform UK Scotland</span>
+                    <span class="party-btn-leader">Scottish Leader: Malcolm Offord</span>
+                </div>
+                <span class="party-btn-arrow">→</span>
+            </button>
+        </div>
+    </div>
+</div>
+ 
+<!-- ════════════════════════════════════
+     PAGE 4 — PARTY DETAIL
+════════════════════════════════════ -->
+<div id="page4" class="page scroll-page saltire-bg">
+    <div class="page4-inner">
+        <div id="detailHeader" class="detail-header"></div>
+        <div class="detail-body">
+            <div class="detail-sec">
+                <div class="detail-sec-title t-policy">Key Policies &amp; Promises</div>
+                <ul id="listPolicy" class="detail-list policy-list"></ul>
+            </div>
+            <div class="detail-sec">
+                <div class="detail-sec-title t-pros">Pros</div>
+                <ul id="listPros" class="detail-list pros-list"></ul>
+            </div>
+            <div class="detail-sec">
+                <div class="detail-sec-title t-cons">Cons</div>
+                <ul id="listCons" class="detail-list cons-list"></ul>
             </div>
         </div>
-
-        <!-- PLAYER AREA -->
-        <div class="game-section">
-            <div class="section-label">You</div>
-            <div class="info-text">Cards in hand: <span id="player-hand-count">3</span></div>
-            <div class="cards-container" id="player-hand-cards"></div>
-            <div class="cards-container" id="player-faceup-cards"></div>
-            <div class="cards-container" id="player-facedown-cards"></div>
-        </div>
-        </div>
-        <!-- END GAME AREA -->
-
-    <div id="lose-screen">
-        <div id="lose-message">
-            <h2>Well, well, well...</h2>
-            <p>I placed this here thinking there is no way she will ever lose and this feature will never be used but I guess I am not always right relatively. So have another go 😊</p>
-            <button id="restart-button">Reset & Try Again</button>
-        </div>
+        <button class="btn-back" onclick="goTo(3)">← Back to All Parties</button>
     </div>
-
-    <div id="treasure-screen">
-        <div id="treasure-message">
-            <h2>Congratulations my spanspek!</h2>
-            <p>Here is your reward</p>
-            <svg id="treasure-chest" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-                <!-- Shadow -->
-                <ellipse cx="120" cy="210" rx="80" ry="15" fill="rgba(0,0,0,0.3)"/>
-                
-                <!-- Chest base -->
-                <rect x="40" y="120" width="160" height="90" fill="#8B4513" stroke="#654321" stroke-width="4"/>
-                <rect x="40" y="120" width="160" height="90" fill="url(#woodGradient)"/>
-                
-                <!-- Wood grain details -->
-                <line x1="40" y1="140" x2="200" y2="140" stroke="#654321" stroke-width="2" opacity="0.5"/>
-                <line x1="40" y1="160" x2="200" y2="160" stroke="#654321" stroke-width="2" opacity="0.5"/>
-                <line x1="40" y1="180" x2="200" y2="180" stroke="#654321" stroke-width="2" opacity="0.5"/>
-                
-                <!-- Chest lid (arched top) -->
-                <defs>
-                    <linearGradient id="woodGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#A0522D;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#FFA500;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
-                    </linearGradient>
-                    <radialGradient id="gemGradient">
-                        <stop offset="0%" style="stop-color:#00FFFF;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#0080FF;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#0040FF;stop-opacity:1" />
-                    </radialGradient>
-                </defs>
-                
-                <path d="M 35 120 Q 35 80, 60 70 L 180 70 Q 205 80, 205 120 Z" fill="url(#woodGradient)" stroke="#654321" stroke-width="4"/>
-                
-                <!-- Gold trim on lid -->
-                <path d="M 40 120 Q 40 85, 60 75 L 180 75 Q 200 85, 200 120" fill="none" stroke="url(#goldGradient)" stroke-width="6"/>
-                <path d="M 45 120 Q 45 88, 62 78 L 178 78 Q 195 88, 195 120" fill="none" stroke="#FFA500" stroke-width="3" opacity="0.7"/>
-                
-                <!-- Central lock mechanism -->
-                <circle cx="120" cy="120" r="18" fill="url(#goldGradient)" stroke="#FF8C00" stroke-width="3"/>
-                <circle cx="120" cy="120" r="12" fill="#654321"/>
-                <rect x="117" y="115" width="6" height="15" fill="url(#goldGradient)" rx="3"/>
-                
-                <!-- Gems on the chest -->
-                <circle cx="80" cy="95" r="8" fill="url(#gemGradient)" stroke="#0080FF" stroke-width="2"/>
-                <circle cx="160" cy="95" r="8" fill="url(#gemGradient)" stroke="#0080FF" stroke-width="2"/>
-                <circle cx="120" cy="85" r="10" fill="#FF1493" stroke="#FF69B4" stroke-width="2"/>
-                
-                <!-- Gold corner decorations -->
-                <polygon points="35,125 45,115 45,125" fill="url(#goldGradient)"/>
-                <polygon points="205,125 195,115 195,125" fill="url(#goldGradient)"/>
-                
-                <!-- Gold bands on base -->
-                <rect x="35" y="145" width="170" height="8" fill="url(#goldGradient)" opacity="0.8"/>
-                <rect x="35" y="185" width="170" height="8" fill="url(#goldGradient)" opacity="0.8"/>
-                
-                <!-- Base feet -->
-                <rect x="50" y="208" width="25" height="8" fill="#654321" rx="2"/>
-                <rect x="165" y="208" width="25" height="8" fill="#654321" rx="2"/>
-                
-                <!-- Sparkle effects -->
-                <circle cx="85" cy="90" r="2" fill="#FFFFFF" opacity="0.9"/>
-                <circle cx="165" cy="90" r="2" fill="#FFFFFF" opacity="0.9"/>
-                <circle cx="115" cy="80" r="2" fill="#FFFFFF" opacity="0.9"/>
-                <polygon points="120,120 122,118 120,116 118,118" fill="#FFFFFF" opacity="0.8"/>
-            </svg>
-            <p style="margin-top: 20px; font-size: 22px; color: #8b0000; font-weight: bold; animation: bounce 1s ease-in-out infinite;">👆 Click to Open! 👆</p>
-        </div>
-    </div>
-
-    <div id="letter-screen">
-        <div id="letter-content">
-            <div class="letter-corner top-left"></div>
-            <div class="letter-corner bottom-left"></div>
-            <h1>Happy Valentine's Day</h1>
-            <p>I hope you have the most amazing day, because you deserve nothing less you drop dead gorgeous human. I can't wait to build Lego and paint with you tomorrow. I hope you actually beat this game and get to read this message because with you and Shithead, I never know. x</p>
-            <p>I have never been happier to have walked into a bathroom than I was on the 25th of November 2025 at 18.92528199859169, 102.44836725716023 (the location of Gary's Irish Bar), because that is when I can say, without a doubt in my mind, that my life changed for the better. You are truly a one-of-a-kind person in the best possible way!</p>
-            <p>You have totally consumed my thoughts. You are the last thing I think about when I go to sleep and the first thing on my mind when I wake up. Distance has a way of making me realise just how much space you fill in my life in such a short period of time. I struggled to write this message, and your letter too, because words don't do justice to how I feel about you. But I want you to know that all I want is to give you the world, and I can't wait until I can grab you by the hips, pull you closer, and give you kisses everywhere... (AND I MEAN EVERYWHERE) I also think you should know I would not be letting go for at least three days minimum.</p>
-            <p>I am not sure if the game gave it away or if this is a complete surprise, but I love you very much, and you've never stopped giving me butterflies all over my body. I hope to maybe get one or two more Valentines if I play my cards right, as I know you are a HOT commodity. xxx</p>
-            <p>Thank you for being you.</p>
-            <p class="signature">Love,<br>Benjamin David Emanuel</p>
-        </div>
-    </div>
-
-    <div id="youtube-player"></div>
-
-    <script>
-        // Load YouTube API
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-player', {
-                height: '1',
-                width: '1',
-                videoId: 'y9Kqb2z9Lzs',
-                playerVars: {
-                    'autoplay': 1,
-                    'loop': 1,
-                    'playlist': 'y9Kqb2z9Lzs',
-                    'controls': 0
-                },
-                events: {
-                    'onReady': function(event) {
-                        event.target.setVolume(50);
-                        event.target.playVideo();
-                    }
-                }
-            });
-        }
-
-        // Game state
-        const SUITS = ['♥', '♦', '♣', '♠'];
-        const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', 'J', 'Q', 'K', 'A'];  // No 10s in deck!
-        
-        let deck = [];
-        let pile = [];
-        let playerHand = [];
-        let playerFaceUp = [];
-        let playerFaceDown = [];
-        let cpuHand = [];
-        let cpuFaceUp = [];
-        let cpuFaceDown = [];
-        let currentPlayer = 'player';
-        let mustPlayLower = false;
-        let gameOver = false;
-
-        // Create and shuffle deck
-        function createDeck() {
-            const fullDeck = [];
-            for (let suit of SUITS) {
-                for (let value of VALUES) {
-                    fullDeck.push({ suit, value });
-                }
-            }
-            // Shuffle
-            for (let i = fullDeck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [fullDeck[i], fullDeck[j]] = [fullDeck[j], fullDeck[i]];
-            }
-            // Return 40 random cards
-            return fullDeck.slice(0, 40);
-        }
-
-        // Deal cards according to rules
-        function dealCards() {
-            deck = createDeck();
-            
-            // Give player specific face-down cards: 2, 3, 2
-            playerFaceDown = [
-                { suit: '♥', value: '2' },
-                { suit: '♦', value: '3' },
-                { suit: '♠', value: '2' }
-            ];
-            
-            // Give player three 10s as face-up cards (ONLY she has 10s, none in deck!)
-            playerFaceUp = [
-                { suit: '♣', value: '10' },
-                { suit: '♥', value: '10' },
-                { suit: '♠', value: '10' }
-            ];
-            
-            // Deal regular cards to CPU
-            cpuFaceDown = [deck.pop(), deck.pop(), deck.pop()];
-            cpuFaceUp = [deck.pop(), deck.pop(), deck.pop()];
-            
-            // Deal 3 to hand for both players
-            playerHand = [deck.pop(), deck.pop(), deck.pop()];
-            cpuHand = [deck.pop(), deck.pop(), deck.pop()];
-        }
-
-        // Get numeric value of card
-        function getCardValue(card) {
-            const map = {
-                '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7,
-                '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
-            };
-            return map[card.value];
-        }
-
-        // Get the effective top card (handling 5s)
-        function getTopCard() {
-            if (pile.length === 0) return null;
-            let top = pile[pile.length - 1];
-            // If top is a 5 (mirror), get the card under it
-            // If 5 is played on nothing, it acts like a 2 (any card can be played)
-            if (top.value === '5' && pile.length > 1) {
-                return pile[pile.length - 2];
-            }
-            // If 5 is the only card, treat it like a 2 (return null so any card can be played)
-            if (top.value === '5' && pile.length === 1) {
-                return null;
-            }
-            return top;
-        }
-
-        // Check if a card can be played
-        function canPlay(card) {
-            if (pile.length === 0) return true;
-            
-            const topCard = getTopCard();
-            const cardVal = getCardValue(card);
-            const topVal = getCardValue(topCard);
-            
-            // 2 can be played on anything (resets)
-            if (card.value === '2') return true;
-            
-            // 10 can be played on anything except 7
-            if (card.value === '10') {
-                return topCard.value !== '7';
-            }
-            
-            // 5 can be played on anything (mirror)
-            if (card.value === '5') return true;
-            
-            // 7 can only be played on cards lower than 7 OR on another 7
-            if (card.value === '7') {
-                return topVal < 7 || topVal === 7;
-            }
-            
-            // If must play lower (7 was just played or 5 on 7)
-            if (mustPlayLower) {
-                // Check if actual top card is a 5
-                const actualTopCard = pile[pile.length - 1];
-                if (actualTopCard.value === '5' && pile.length > 1) {
-                    const cardUnder5 = pile[pile.length - 2];
-                    // If 5 is on a 7, preserve the "must play lower" rule
-                    if (cardUnder5.value === '7') {
-                        return cardVal < 7;
-                    }
-                }
-                return cardVal < 7;
-            }
-            
-            // NEW RULE: Allow same card on same card
-            if (cardVal === topVal) return true;
-            
-            // Normal rule: play equal or higher
-            return cardVal >= topVal;
-        }
-
-        // Play a card
-        function playCard(card, player) {
-            pile.push(card);
-            showMessage(`${player === 'player' ? 'You' : 'CPU'} played ${card.value}${card.suit}`);
-            
-            // Check for 4 of a kind
-            if (pile.length >= 4) {
-                const last4 = pile.slice(-4);
-                if (last4.every(c => c.value === last4[0].value)) {
-                    showMessage('Four of a kind! Pile cleared!');
-                    pile = [];
-                    mustPlayLower = false;
-                    render();
-                    setTimeout(() => {
-                        continuePlay(player);
-                    }, 1000);
-                    return;
-                }
-            }
-            
-            // Handle special cards
-            if (card.value === '10') {
-                showMessage('10 played! Pile cleared!');
-                pile = [];
-                mustPlayLower = false;
-                render();
-                setTimeout(() => {
-                    continuePlay(player);
-                }, 1000);
-                return;
-            }
-            
-            if (card.value === '2') {
-                showMessage('2 played! Pile reset!');
-                mustPlayLower = false;
-                currentPlayer = player === 'player' ? 'cpu' : 'player';
-                render();
-                if (currentPlayer === 'cpu') {
-                    setTimeout(cpuTurn, 1500);
-                }
-                return;
-            }
-            
-            if (card.value === '7') {
-                showMessage('7 played! Next player must play lower!');
-                mustPlayLower = true;
-                currentPlayer = player === 'player' ? 'cpu' : 'player';
-                render();
-                if (currentPlayer === 'cpu') {
-                    setTimeout(cpuTurn, 1500);
-                }
-                return;
-            }
-            
-            // Handle 5 (mirror card) - check if it's on a 7
-            if (card.value === '5') {
-                // Check if 5 is played on a 7
-                if (pile.length > 1) {
-                    const cardUnder5 = pile[pile.length - 2];
-                    if (cardUnder5.value === '7') {
-                        showMessage('5 played on 7! Next player must still play lower!');
-                        mustPlayLower = true;
-                        currentPlayer = player === 'player' ? 'cpu' : 'player';
-                        render();
-                        if (currentPlayer === 'cpu') {
-                            setTimeout(cpuTurn, 1500);
-                        }
-                        return;
-                    }
-                }
-                // If 5 not on a 7, treat as normal card
-            }
-            
-            if (card.value === '8') {
-                showMessage('8 played! You go again!');
-                mustPlayLower = false;
-                render();
-                setTimeout(() => {
-                    continuePlay(player);
-                }, 1000);
-                return;
-            }
-            
-            // Normal card - switch turns
-            mustPlayLower = false;
-            currentPlayer = player === 'player' ? 'cpu' : 'player';
-            render();
-            if (currentPlayer === 'cpu') {
-                setTimeout(cpuTurn, 1500);
-            }
-        }
-
-        // Continue playing after special card
-        function continuePlay(player) {
-            if (checkWin(player)) return;
-            
-            if (player === 'player') {
-                refillHand('player');
-                render();
-            } else {
-                refillHand('cpu');
-                cpuTurn();
-            }
-        }
-
-        // Refill hand from deck
-        function refillHand(player) {
-            const hand = player === 'player' ? playerHand : cpuHand;
-            while (hand.length < 3 && deck.length > 0) {
-                hand.push(deck.pop());
-            }
-        }
-
-        // Check if player won
-        function checkWin(player) {
-            const hand = player === 'player' ? playerHand : cpuHand;
-            const faceUp = player === 'player' ? playerFaceUp : cpuFaceUp;
-            const faceDown = player === 'player' ? playerFaceDown : cpuFaceDown;
-            
-            if (hand.length === 0 && faceUp.length === 0 && faceDown.length === 0) {
-                gameOver = true;
-                if (player === 'player') {
-                    setTimeout(showTreasure, 1000);
-                } else {
-                    setTimeout(showLoseScreen, 1000);
-                }
-                return true;
-            }
-            return false;
-        }
-
-        // Show lose screen
-        function showLoseScreen() {
-            document.getElementById('lose-screen').style.display = 'flex';
-        }
-
-        // Show treasure screen
-        function showTreasure() {
-            const treasureScreen = document.getElementById('treasure-screen');
-            treasureScreen.style.display = 'flex';
-            
-            // Create confetti
-            const colors = ['#ff006e', '#8338ec', '#06ffa5', '#ffd700', '#ff6b6b', '#06d6a0'];
-            for (let i = 0; i < 100; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
-                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    treasureScreen.appendChild(confetti);
-                }, i * 30);
-            }
-        }
-
-        // Show love letter
-        function showLetter() {
-            const letterScreen = document.getElementById('letter-screen');
-            letterScreen.style.display = 'flex';
-            
-            // Create falling hearts
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const heart = document.createElement('div');
-                    heart.className = 'heart';
-                    heart.textContent = '❤';
-                    heart.style.left = Math.random() * 100 + '%';
-                    heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                    heart.style.animationDelay = Math.random() * 2 + 's';
-                    letterScreen.appendChild(heart);
-                }, i * 200);
-            }
-        }
-
-        // Player clicks a card
-        function playerClickCard(card, source) {
-            if (currentPlayer !== 'player' || gameOver) return;
-            
-            if (!canPlay(card)) {
-                showMessage("Can't play that card!");
-                return;
-            }
-            
-            // Remove card from source
-            if (source === 'hand') {
-                const idx = playerHand.indexOf(card);
-                playerHand.splice(idx, 1);
-            } else if (source === 'faceup') {
-                const idx = playerFaceUp.indexOf(card);
-                playerFaceUp.splice(idx, 1);
-            }
-            
-            playCard(card, 'player');
-            refillHand('player');
-            checkWin('player');
-        }
-
-        // Player clicks face-down card (blind)
-        function playerClickFaceDown(index) {
-            if (currentPlayer !== 'player' || gameOver) return;
-            if (playerHand.length > 0 || playerFaceUp.length > 0) return;
-            
-            const card = playerFaceDown.splice(index, 1)[0];
-            
-            if (canPlay(card)) {
-                showMessage('Blind card works!');
-                playCard(card, 'player');
-                checkWin('player');
-            } else {
-                showMessage('Blind card failed! Picking up pile...');
-                playerHand.push(card);
-                pickupPile('player');
-            }
-        }
-
-        // Pick up pile
-        function pickupPile(player) {
-            if (player === 'player') {
-                playerHand.push(...pile);
-            } else {
-                cpuHand.push(...pile);
-            }
-            pile = [];
-            mustPlayLower = false;
-            currentPlayer = player === 'player' ? 'cpu' : 'player';
-            render();
-            if (currentPlayer === 'cpu') {
-                setTimeout(cpuTurn, 1500);
-            }
-        }
-
-        // CPU turn
-        function cpuTurn() {
-            if (gameOver) return;
-            
-            // Check win
-            if (checkWin('cpu')) return;
-            
-            // Determine which cards CPU can play from
-            let availableCards = [];
-            if (cpuHand.length > 0) {
-                availableCards = cpuHand.map((card, idx) => ({card, source: 'hand', idx}));
-            } else if (cpuFaceUp.length > 0) {
-                availableCards = cpuFaceUp.map((card, idx) => ({card, source: 'faceup', idx}));
-            } else if (cpuFaceDown.length > 0) {
-                // Play blind
-                const idx = Math.floor(Math.random() * cpuFaceDown.length);
-                const card = cpuFaceDown.splice(idx, 1)[0];
-                if (canPlay(card)) {
-                    playCard(card, 'cpu');
-                    refillHand('cpu');
-                    checkWin('cpu');
-                } else {
-                    showMessage('CPU blind card failed! Picking up...');
-                    cpuHand.push(card);
-                    pickupPile('cpu');
-                }
-                return;
-            }
-            
-            // Find playable cards
-            const playable = availableCards.filter(item => canPlay(item.card));
-            
-            if (playable.length > 0) {
-                // SMART CPU STRATEGY
-                let choice;
-                
-                // Priority 1: Play 8 to skip and play again
-                const eights = playable.filter(item => item.card.value === '8');
-                if (eights.length > 0) {
-                    choice = eights[0];
-                }
-                
-                // Priority 2: Play 5 strategically on 7 or Ace
-                if (!choice) {
-                    const fives = playable.filter(item => item.card.value === '5');
-                    if (fives.length > 0 && pile.length > 0) {
-                        const topCard = pile[pile.length - 1];
-                        // Play 5 on 7 or Ace
-                        if (topCard.value === '7' || topCard.value === 'A') {
-                            choice = fives[0];
-                        }
-                    }
-                }
-                
-                // Priority 3: Play 7 strategically if player has many cards
-                if (!choice && playerHand.length > 4) {
-                    const sevens = playable.filter(item => item.card.value === '7');
-                    if (sevens.length > 0) {
-                        choice = sevens[0];
-                    }
-                }
-                
-                // Priority 4: Play LOWEST valued card first (3 → 4 → 6 → 7 → 8 → 9 → J → Q → K → A)
-                // Saves high cards and power cards (2s and 5s) for later
-                if (!choice) {
-                    const regularCards = playable.filter(item => 
-                        item.card.value !== '2' && item.card.value !== '5'
-                    );
-                    if (regularCards.length > 0) {
-                        // Sort ascending (lowest first) and pick the lowest card
-                        regularCards.sort((a, b) => getCardValue(a.card) - getCardValue(b.card));
-                        choice = regularCards[0]; // This picks the LOWEST card
-                    }
-                }
-                
-                // Priority 5: If no regular cards work, use 5 (before using 2)
-                if (!choice) {
-                    const fives = playable.filter(item => item.card.value === '5');
-                    if (fives.length > 0) {
-                        choice = fives[0];
-                    }
-                }
-                
-                // Priority 6: LAST RESORT - Play 2 (get out of jail card)
-                if (!choice) {
-                    const twos = playable.filter(item => item.card.value === '2');
-                    if (twos.length > 0) {
-                        choice = twos[0];
-                    }
-                }
-                
-                // Execute choice
-                if (choice.source === 'hand') {
-                    cpuHand.splice(choice.idx, 1);
-                } else {
-                    cpuFaceUp.splice(choice.idx, 1);
-                }
-                playCard(choice.card, 'cpu');
-                refillHand('cpu');
-                checkWin('cpu');
-            } else {
-                // Must pick up
-                showMessage('CPU picks up pile!');
-                pickupPile('cpu');
-            }
-        }
-
-        // Render the game
-        function render() {
-            // Update turn indicator
-            document.getElementById('turn-indicator').textContent = 
-                currentPlayer === 'player' ? 'Your Turn' : "CPU's Turn";
-            
-            // Update deck counter
-            document.getElementById('deck-count').textContent = deck.length;
-            
-            // Update hand counts
-            document.getElementById('player-hand-count').textContent = playerHand.length;
-            document.getElementById('cpu-hand-count').textContent = cpuHand.length;
-            
-            // Render CPU face-up
-            const cpuFaceUpEl = document.getElementById('cpu-faceup-cards');
-            cpuFaceUpEl.innerHTML = '';
-            cpuFaceUp.forEach(card => {
-                cpuFaceUpEl.appendChild(createCardElement(card));
-            });
-            
-            // Render CPU face-down
-            const cpuFaceDownEl = document.getElementById('cpu-facedown-cards');
-            cpuFaceDownEl.innerHTML = '';
-            cpuFaceDown.forEach(card => {
-                const el = createCardElement(card, true);
-                cpuFaceDownEl.appendChild(el);
-            });
-            
-            // Render pile
-            const pileEl = document.getElementById('pile-display');
-            pileEl.innerHTML = '';
-            if (pile.length > 0) {
-                const recentCards = pile.slice(-3);
-                recentCards.forEach((card, i) => {
-                    const el = createCardElement(card);
-                    el.classList.add('pile-card');
-                    el.style.transform = `translate(${i * 3}px, ${i * 3}px)`;
-                    pileEl.appendChild(el);
-                });
-            }
-            
-            // Render player hand
-            const playerHandEl = document.getElementById('player-hand-cards');
-            playerHandEl.innerHTML = '';
-            playerHand.forEach(card => {
-                const el = createCardElement(card);
-                el.onclick = () => playerClickCard(card, 'hand');
-                playerHandEl.appendChild(el);
-            });
-            
-            // Render player face-up
-            const playerFaceUpEl = document.getElementById('player-faceup-cards');
-            playerFaceUpEl.innerHTML = '';
-            playerFaceUp.forEach(card => {
-                const el = createCardElement(card);
-                if (playerHand.length === 0) {
-                    el.onclick = () => playerClickCard(card, 'faceup');
-                } else {
-                    el.style.opacity = '0.5';
-                    el.style.cursor = 'not-allowed';
-                }
-                playerFaceUpEl.appendChild(el);
-            });
-            
-            // Render player face-down
-            const playerFaceDownEl = document.getElementById('player-facedown-cards');
-            playerFaceDownEl.innerHTML = '';
-            playerFaceDown.forEach((card, idx) => {
-                const el = createCardElement(card, true);
-                if (playerHand.length === 0 && playerFaceUp.length === 0) {
-                    el.classList.add('clickable');
-                    el.onclick = () => playerClickFaceDown(idx);
-                }
-                playerFaceDownEl.appendChild(el);
-            });
-            
-            // Pickup button
-            const pickupBtn = document.getElementById('pickup-btn');
-            if (currentPlayer === 'player' && !gameOver) {
-                // If we're on face-down cards, don't show pickup button (must play blind)
-                if (playerHand.length === 0 && playerFaceUp.length === 0 && playerFaceDown.length > 0) {
-                    pickupBtn.style.display = 'none';
-                } else {
-                    // Otherwise check if player has valid moves
-                    const currentCards = playerHand.length > 0 ? playerHand : playerFaceUp;
-                    const hasValidPlay = currentCards.some(card => canPlay(card));
-                    pickupBtn.style.display = hasValidPlay ? 'none' : 'block';
-                }
-            } else {
-                pickupBtn.style.display = 'none';
-            }
-        }
-
-        // Create card DOM element
-        function createCardElement(card, faceDown = false) {
-            const el = document.createElement('div');
-            el.className = 'card';
-            
-            if (faceDown) {
-                el.classList.add('face-down');
-                el.textContent = '?';
-                return el;
-            }
-            
-            const color = (card.suit === '♥' || card.suit === '♦') ? 'red' : 'black';
-            el.classList.add(color);
-            
-            el.innerHTML = `
-                <div>${card.value}</div>
-                <div class="card-suit">${card.suit}</div>
-            `;
-            
-            return el;
-        }
-
-        // Show message
-        function showMessage(msg) {
-            document.getElementById('game-message').textContent = msg;
-        }
-
-        // Pickup button
-        document.getElementById('pickup-btn').onclick = () => {
-            if (currentPlayer === 'player') {
-                pickupPile('player');
-            }
-        };
-
-        // Restart button
-        document.getElementById('restart-button').onclick = () => {
-            // Hide lose screen
-            document.getElementById('lose-screen').style.display = 'none';
-            
-            // Clear any confetti from treasure screen
-            const treasureScreen = document.getElementById('treasure-screen');
-            const confettiElements = treasureScreen.querySelectorAll('.confetti');
-            confettiElements.forEach(el => el.remove());
-            treasureScreen.style.display = 'none';
-            
-            // Clear any hearts from letter screen
-            const letterScreen = document.getElementById('letter-screen');
-            const heartElements = letterScreen.querySelectorAll('.heart');
-            heartElements.forEach(el => el.remove());
-            letterScreen.style.display = 'none';
-            
-            // Restart the game
-            initGame();
-        };
-
-        // Treasure chest click
-        document.getElementById('treasure-chest').onclick = () => {
-            const treasureScreen = document.getElementById('treasure-screen');
-            // Remove confetti
-            const confettiElements = treasureScreen.querySelectorAll('.confetti');
-            confettiElements.forEach(el => el.remove());
-            // Hide treasure screen
-            treasureScreen.style.display = 'none';
-            showLetter();
-        };
-
-        // Initialize game
-        function initGame() {
-            dealCards();
-            currentPlayer = 'player';
-            mustPlayLower = false;
-            gameOver = false;
-            pile = [];
-            document.getElementById('deck-count').textContent = deck.length;
-            showMessage('Game started! Play a card.');
-            render();
-        }
-
-        // Start game from cover page
-        function startGame() {
-            document.getElementById('cover-page').classList.add('hidden');
-            document.getElementById('game-area').classList.add('active');
-            initGame();
-        }
-
-        // Don't auto-start - wait for button click
-        // Game will start when startGame() is called from the button
-    </script>
+</div>
+ 
+<script>
+/* ── Party data ── */
+const PARTIES = {
+    snp: {
+        name: 'Scottish National Party (SNP)',
+        leader: 'Leader: First Minister John Swinney',
+        cls: 'snp',
+        policy: [
+            'A three-stage NHS plan ("investment, protection, renewal"), with 14 additional GP walk-in clinics on top of 16 existing pilots.',
+            'Passing through any Barnett consequentials from English NHS spending and a £531m three-year GP contract.',
+            'Means-tested expansion of childcare to older children and a first-time buyers deposit scheme.',
+            'Price caps on 20 to 50 essentials in large supermarkets, subject to legal feasibility.',
+            "Maintaining Scotland's progressive income tax system with no new bands or rates.",
+            'Mansion-tax bands on council tax for properties valued £1m and above.',
+            'An independence referendum mandate, a vote on Day 1 of the new parliament for a Section 30 order, plus a draft referendum bill.'
+        ],
+        pros: [
+            'Experienced governing party with a settled leadership and the most detailed delivery infrastructure in Holyrood.',
+            'Strong record on universalist social policies including free prescriptions, free tuition, the Scottish Child Payment, and free bus travel for under-22s and over-60s.',
+            "Scottish income tax is more progressive than the rest of the UK, and child poverty rates in Scotland are below those in England.",
+            'Policy coherence on issues popular in Scotland, including opposition to new oil and gas in the North Sea, defending devolution, and championing migration to Scotland.',
+            'The only major party with a clear, costed pathway to a fresh independence referendum, appealing to roughly half of voters who back independence.'
+        ],
+        cons: [
+            'After almost 19 years in power, the party owns a long list of public-service problems: long NHS waits over 53,000 exceeding 12 months as of January 2026, record A&E pressures, the Ferguson ferries fiasco, missed education attainment targets, and persistent issues in policing and prisons.',
+            'The IFS estimates SNP manifesto pledges add about £1.4 billion of additional spending by 2031 to 32, much of it relying on assumed efficiencies the IFS calls implausible without further tax rises or spending cuts.',
+            'Council tax remains based on 1991 valuations despite 19 years of SNP government.',
+            'Internal scandals including deleted Covid WhatsApps, ongoing issues around party finances, and a series of leadership changes.',
+            'The UK Supreme Court (2022) ruled Holyrood cannot legislate unilaterally for a referendum, and Westminster has refused a Section 30 order.'
+        ]
+    },
+    lab: {
+        name: 'Scottish Labour',
+        leader: 'Leader: Anas Sarwar',
+        cls: 'lab',
+        policy: [
+            'Bringing back the family doctor, cutting NHS waiting times with funding-following-the-patient and cross-board treatment, ending corridor care, and launching a new mental health emergency service.',
+            'Building more homes and scrapping the current business rates system.',
+            'A Local Democracy Act devolving powers to Scottish regions, with optional regional mayors.',
+            'A smartphone ban in schools, recruiting more teachers, and tackling pupil violence.',
+            'A right to recall MSPs.',
+            "Implementing the Supreme Court's April 2025 ruling on biological sex for single-sex wards, services and spaces.",
+            'Economic plans claimed to lift Scottish GDP by 2.1 to 2.4% over five years.'
+        ],
+        pros: [
+            'Offers the clearest unionist alternative to a fifth SNP term and is currently the only opposition vehicle credible enough in some seats to defeat both the SNP and Reform.',
+            'Manifesto is focused on delivery rather than distraction, with a strong emphasis on NHS, housing and education issues that polls show voters prioritise.',
+            'Anas Sarwar has demonstrated independence from London by publicly criticising winter fuel cuts, the two-child benefit cap, Gaza policy, and calling for Keir Starmer to resign in February 2026.',
+            'Won the 2024 UK general election in Scotland (37 of 57 Westminster seats) and the 2025 Hamilton by-election, showing it can beat the SNP.',
+            'Has set out a costed framework judged by the Fraser of Allander Institute as one of the more grounded prospectuses.'
+        ],
+        cons: [
+            "Heavily dragged down by the unpopularity of Sir Keir Starmer's UK Government, including cuts to winter fuel payments, the WASPI women issue, National Insurance rises, the Grangemouth refinery closure and the Mandelson scandal.",
+            'Critics argue several pledges lack delivery detail.',
+            'Internal divisions were exposed when Sarwar called for Starmer to resign, with senior figures reportedly opposing it.',
+            'Acceptance of a six-figure donation from the Easdale brothers in early 2026 drew scrutiny.',
+            'The "country before party" stance struggles for credibility with voters who blame Labour at Westminster for current cost-of-living pressures.'
+        ]
+    },
+    con: {
+        name: 'Scottish Conservative and Unionist Party',
+        leader: 'Leader: Russell Findlay',
+        cls: 'con',
+        policy: [
+            'Five "Get Scotland Working" pledges: cut bills by up to £2,500, raise school standards, faster GP appointments, fix roads, and more police.',
+            'Major income-tax reform including a 0% band uprated with inflation, a single 19p basic and intermediate rate, and raising the higher-rate threshold to £50,270 to match rUK.',
+            'A £20,000 property allowance for business rates and a smoother taper above thresholds.',
+            'A £500 income-tax rebate for pensioners.',
+            'A two-child cap on the Scottish Child Payment, tougher disability assessments, cutting quangos by 25%, and civil-service headcount back to 2016 levels.',
+            'Sending some prisoners abroad and banning civil servants and ministers from advocating for independence on public time.'
+        ],
+        pros: [
+            'The deepest, most detailed tax-cut programme on the ballot. The IFS estimates £3.7 billion a year of cuts by 2031 to 32, removing the Scotland to rUK income tax differential that critics say damages competitiveness.',
+            'Sensible structural reform of business rates, broadly endorsed by independent analysts.',
+            'The clearest unionist message, with explicit and unambiguous opposition to a second independence referendum.',
+            "The pensioner £500 tax rebate is a tangible cost-of-living offer to an engaged demographic who lost out from Labour's UK winter-fuel cuts.",
+            'A strong focus on traditional public-service basics that resonate widely.'
+        ],
+        cons: [
+            'The IFS describes the costings as "costed on paper but may not survive contact with reality", with tax cuts paid for largely by speculative welfare savings and a cull of 132 quangos, many of which are core agencies like Social Security Scotland.',
+            'The Scottish Tories are projected to fall to just 7 seats, their worst-ever Holyrood result, as Reform UK eats into their base.',
+            "The two-child cap and tougher disability assessments would cut benefits for some of Scotland's poorest families.",
+            'Sending prisoners abroad has been criticised as legally dubious and operationally untested.',
+            'Tied to a UK Conservative brand that lost the 2024 general election heavily.'
+        ]
+    },
+    ld: {
+        name: 'Scottish Liberal Democrats',
+        leader: 'Leader: Alex Cole-Hamilton',
+        cls: 'ld',
+        policy: [
+            'Embedding 900 multidisciplinary patient-facing staff in GP practices and neighbourhood health teams.',
+            'A 10-year NHS workforce plan, key-worker housing, and a "homecoming incentive" for Scots working overseas.',
+            '2,000 additional pupil support assistants, ending zero-hours and short-term teacher contracts, and smartphone-free schools.',
+            "Passing a Ferries Bill to end the SNP's ferry crisis.",
+            'An emergency home-insulation programme and accelerating solar and heat pumps.',
+            'Lifting income tax thresholds with inflation and beginning to close the rUK differential, but only where funds are available.',
+            'Moving toward a land-value element in business rates.',
+            'Decriminalising abortion, banning conversion practices, and establishing a legal right to palliative care.'
+        ],
+        pros: [
+            'A strong reputation for competence on local issues and constituency casework.',
+            'The manifesto is one of the more realistic on tax, explicitly conditioning cuts on fiscal headroom.',
+            'Particularly strong and detailed proposals on mental health, dental access, and rural health workforce, endorsed by the Royal College of Nursing.',
+            'A centrist bridge between unionist parties, able to attract tactical anti-SNP votes without the baggage of either Conservatives or Reform.',
+            'Projected to roughly double their seats, with constituency pickups in Edinburgh and parts of the Central Belt.'
+        ],
+        cons: [
+            'Limited scale. Even an excellent night yields perhaps 8 to 10 seats, meaning influence depends entirely on a hung parliament.',
+            'The Fraser of Allander Institute notes the original manifesto launched without public costings, with many tax pledges described as statements of intent rather than policy.',
+            'Some flagship pledges, such as 900 extra GP-team staff, lack clear funding detail.',
+            'Historically weak on the regional list and concentrated geographically in a handful of areas, leaving large parts of urban Scotland with no Lib Dem presence.',
+            'Still carrying some reputational damage from the 2010 to 2015 UK coalition government.'
+        ]
+    },
+    grn: {
+        name: 'Scottish Greens',
+        leader: 'Co-leaders: Gillian Mackay and Ross Greer',
+        cls: 'grn',
+        policy: [
+            '£600m investment in onshore and offshore wind, wave and solar energy, with absolutely no new oil and gas fields in the North Sea.',
+            '40,000 green-energy jobs, insulation and heat-pump grants, and rail expansion prioritised over road dualling.',
+            'Replacing council tax with a Residential Property Tax based on up-to-date valuations, revalued at least every five years.',
+            'Massive childcare expansion: 570 free hours from six months and 1,140 hours for two-year-olds.',
+            'Raising the Scottish Child Payment to £40 immediately and targeting £55 by 2030, with a roadmap to a Minimum Income Guarantee.',
+            'Ending all NHS dental charges.',
+            'Free bus travel for everyone, publicly-owned bus and rail, and permanently abolishing peak fares.',
+            '78,500 social homes over five years, statutory targets to end homelessness by 2040, and permanent rent controls.',
+            'Continuing to support an independence referendum, defending trans rights, and banning conversion practices.'
+        ],
+        pros: [
+            'The most ambitious manifesto on climate, housing supply, childcare and welfare, areas where Scotland is widely seen to be falling behind its own targets.',
+            'A tangible record from the Bute House Agreement: free bus travel for under-22s, ending peak rail fares, emergency rent freeze, record nature spending, and a bigger Scottish Child Payment.',
+            "Council tax replacement with a properly revalued property tax is endorsed by the IFS as a credible direction of reform, addressing one of Scotland's most regressive taxes.",
+            'Projected to roughly double seats to around 16, potentially winning their first-ever constituency seat in Edinburgh Central, making them likely kingmakers.',
+            'A strong social-justice and rights agenda.'
+        ],
+        cons: [
+            'The IFS and Fraser of Allander criticise the manifesto for little detail on Scottish income tax and for combining very large spending pledges with limited costings.',
+            "The combined property transaction tax package could make Scotland's property taxes the highest in the UK and may damage rental supply and market activity.",
+            'A full Minimum Income Guarantee could cost up to £8.1 billion a year on Scottish Government modelling, with affordability contested.',
+            'Only six constituency candidates, meaning influence depends on coalition leverage rather than direct mandates.',
+            'Gender policy stance attracts criticism from both gender-critical voters and some on the left who felt the Bute House Agreement compromised too much.'
+        ]
+    },
+    ref: {
+        name: 'Reform UK Scotland',
+        leader: 'Scottish Leader: Malcolm Offord',
+        cls: 'ref',
+        policy: [
+            'Cutting Scottish income tax by scrapping the six-band system, mirroring rUK three bands, and setting each rate 1p below rUK.',
+            'Scrapping all SNP Net Zero related targets, subsidies and quangos, lifting the moratorium on new nuclear, and rehabilitating North Sea gas as the primary energy system.',
+            'Culling 132 quangos and using claimed savings of £7.5bn to fund tax cuts.',
+            'An independent Scottish Healthcare Reform Commission to review NHS delivery, embracing AI and the NHS app.',
+            'Cutting the number of Holyrood constituencies from 73 to 57.',
+            'A two-child cap on the Scottish Child Payment, tightening welfare, and a "First Job Passport".',
+            'Repealing the Hate Crime and Public Order (Scotland) Act and scrapping gender ideology guidance in schools.',
+            'Tightening asylum housing arrangements, reducing immigration, and opposing a near-term independence referendum.'
+        ],
+        pros: [
+            'Capturing genuine voter anger about cost of living, immigration, asylum housing, and 19 years of SNP government, polling around 17 to 19% from a near-zero base in 2021.',
+            'Offering the clearest break from Holyrood consensus politics and appealing to voters who feel ignored by the four established parties.',
+            "The tax-cutting agenda is bold and explicit, and bringing Scottish rates below rUK would, on paper, address Scotland's competitiveness gap.",
+            'Pragmatic-sounding positions on nuclear power and energy security resonate with some voters and parts of industry.',
+            'Streamlined Holyrood with fewer MSPs and fewer quangos appeals to anti-establishment sentiment.'
+        ],
+        cons: [
+            "The Fraser of Allander Institute calls Reform's costings objectively implausible: the £7.5bn savings figure includes many bodies that are core public services, and the income-tax cuts cannot pay for themselves on any credible Scottish Fiscal Commission modelling.",
+            'Multiple Reform candidates have faced allegations of racist or extreme rhetoric during the campaign.',
+            'The party only became Holyrood-relevant via a defection from the Conservatives and has no track record in devolved government.',
+            'Scrapping Net Zero targets would require reversing statutory Scottish climate commitments.',
+            'Cutting the number of MSPs would require a constitutional change opposed by every other party.',
+            "Recent reporting on Nigel Farage's £5m Harborne donation, under examination by the Electoral Commission, has drawn scrutiny."
+        ]
+    }
+};
+ 
+/* ── Audio ── */
+const audio = document.getElementById('pipes');
+const audioBtn = document.getElementById('audioBtn');
+let musicOn = false;
+audio.volume = 0.55;
+ 
+function tryPlay() {
+    audio.play().then(() => {
+        musicOn = true;
+        audioBtn.textContent = '🔇 Mute';
+    }).catch(() => {});
+}
+ 
+function toggleAudio() {
+    if (audio.paused) { audio.play(); musicOn = true; audioBtn.textContent = '🔇 Mute'; }
+    else              { audio.pause(); musicOn = false; audioBtn.textContent = '🎵 Music'; }
+}
+ 
+/* ── Navigation ── */
+function goTo(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+ 
+    if (n === 3 || n === 4) {
+        if (musicOn) { audio.pause(); audioBtn.textContent = '🎵 Music'; musicOn = false; }
+    }
+}
+ 
+function startJourney() {
+    tryPlay();
+    goTo(2);
+}
+ 
+/* ── Party detail ── */
+function showParty(id) {
+    const p = PARTIES[id];
+ 
+    document.getElementById('detailHeader').className = 'detail-header ' + p.cls;
+    document.getElementById('detailHeader').innerHTML =
+        `<div class="detail-party-name">${p.name}</div>
+         <div class="detail-party-leader">${p.leader}</div>`;
+ 
+    fill('listPolicy', p.policy);
+    fill('listPros',   p.pros);
+    fill('listCons',   p.cons);
+ 
+    goTo(4);
+}
+ 
+function fill(id, arr) {
+    document.getElementById(id).innerHTML =
+        arr.map(t => `<li>${t}</li>`).join('');
+}
+ 
+/* ── Try autoplay on load ── */
+window.addEventListener('load', () => setTimeout(tryPlay, 600));
+</script>
+ 
 </body>
 </html>
+ 
